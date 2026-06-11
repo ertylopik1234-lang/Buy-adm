@@ -6,7 +6,7 @@ import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ========== КОНФИГУРАЦИЯ (ЗАМЕНИТЕ ТОКЕН) ==========
-BOT_TOKEN = "ВАШ_ТОКЕН"  # <--- СЮДА ВСТАВЬТЕ ТОКЕН ОТ @BotFather
+BOT_TOKEN = "8669616261:AAE49hFlnQIgsBIVaDdz__k9gL2wfF_fDcA"  # <--- СЮДА ВСТАВЬТЕ ТОКЕН ОТ @BotFather
 ADMIN_ID = 8744429026
 YOOMONEY_WALLET = "4100119550918047"
 CRYPTOBOT_API_KEY = "594576:AAUhkSu0iId6WyMMLwwP5urmizhRSaD7pOG"
