@@ -11,8 +11,8 @@ BOT_TOKEN = "8669616261:AAE49hFlnQIgsBIVaDdz__k9gL2wfF_fDcA"  # <--- СЮДА В
 ADMIN_ID = 8744429026
 YOOMONEY_WALLET = "4100119550918047"
 CRYPTOBOT_API_KEY = "594576:AAUhkSu0iId6WyMMLwwP5urmizhRSaD7pOG"
-CHANNEL_ID = -1003841665487  # ID канала (где выдаём админку)
-TEMPLATES_GROUP_INVITE = "https://t.me/+XXXXXXXXXXX"  # <--- ССЫЛКА НА ГРУППУ С ШАБЛОНАМИ
+CHANNEL_ID = 1003841665487  # ID канала (где выдаём админку)
+TEMPLATES_GROUP_INVITE = "https://t.me/+S8CmDuNpaLU3NGVi"  # <--- ССЫЛКА НА ГРУППУ С ШАБЛОНАМИ
 
 USERS_FILE = "users.json"
 
@@ -108,6 +108,18 @@ def check_crypto_invoice(invoice_id):
     except:
         return False
 
+def get_user_username(user_id):
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/getChat"
+        r = requests.get(url, params={"chat_id": user_id})
+        username = r.json().get("result", {}).get("username", "")
+        if username:
+            return "@" + username
+        else:
+            return f"ID {user_id}"
+    except:
+        return f"ID {user_id}"
+
 def grant_access(user_id, duration):
     now = datetime.now()
     if duration == "week":
@@ -119,9 +131,14 @@ def grant_access(user_id, duration):
     users[str(user_id)] = {"expires": expires}
     save_users(users)
 
+    # Назначаем админом в канале
     promote_to_admin(CHANNEL_ID, user_id)
     send_templates_group_link(user_id)
     send_message(user_id, f"✅ Вы получили доступ к админке канала на срок: {duration}")
+    
+    # Получаем username пользователя и уведомляем админа
+    username = get_user_username(user_id)
+    send_message(ADMIN_ID, f"🛒 Пользователь {username} купил админку на срок: {duration}")
 
 # ========== ОСНОВНОЙ ЦИКЛ ==========
 print("✅ Бот запущен")
@@ -133,7 +150,6 @@ while True:
             if payment["type"] == "crypto":
                 if check_crypto_invoice(payment["invoice_id"]):
                     grant_access(user_id, payment["duration"])
-                    send_message(ADMIN_ID, f"✅ Пользователь {user_id} оплатил {payment['amount']} USDT ({payment['duration']})")
                     del pending_payments[user_id]
 
         url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?offset={last_update_id+1}&timeout=10"
